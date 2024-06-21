@@ -1,8 +1,10 @@
-import 'dotenv/config'; 
+const dotenv = require('dotenv')
+const bodyParser = require('body-parser');
 const express = require("express");
+const v1StudyRouter = require("./v1/routes/studyRoutes");
+const authRoutes = require('./v1/routes/auth');
 
-const v1Router = require("./v1/routes/studyRoutes");
-
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -11,8 +13,9 @@ app.get("/", (req, res) => {
   res.send("<h2>It's Working!</h2>");
 });
 
-
-app.use("/api/v1", v1Router);
+app.use(bodyParser.json());
+app.use("/api/v1/study", v1StudyRouter);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
