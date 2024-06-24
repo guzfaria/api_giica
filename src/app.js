@@ -1,8 +1,9 @@
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser');
 const express = require("express");
-const v1StudyRouter = require("./v1/routes/studyRoutes");
-const authRoutes = require('./v1/routes/auth');
+const v1StudyRouter = require("./v1/routes/studyRoute");
+const authRoutes = require('./v1/routes/authRoute');
+const { swaggerDocs: V1SwaggerDocs } = require("./v1/swagger");
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
+  V1SwaggerDocs(app, PORT);
 });
 
 /* const http = require('http');
