@@ -1,26 +1,36 @@
-const dotenv = require('dotenv')
-const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 const express = require("express");
-const v1StudyRouter = require("./v1/routes/studyRoute");
-const authRoutes = require('./v1/routes/authRoute');
-const { swaggerDocs: V1SwaggerDocs } = require("./v1/swagger");
+const bodyParser = require('body-parser');
+const v1StudyRouter = require("./src/v1/routes/studyRoutes");
+const authRoutes = require('./src/v1/routes/authRoutes');
+const sequelize = require('./config/database');
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(bodyParser.urlencoded({ extended: true }));
 
-
-app.get("/", (req, res) => {
-  res.send("<h2>It's Working!</h2>");
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Erro interno no servidor' });
 });
 
+sequelize.authenticate()
+    .then(() => {
+        console.log('Connection to the database has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
+
 app.use(bodyParser.json());
-app.use("/api/v1/study", v1StudyRouter);
+
+app.use("/api/v1", v1StudyRouter);
 app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`API is listening on port ${PORT}`);
-  V1SwaggerDocs(app, PORT);
+  
 });
 
 /* const http = require('http');
